@@ -8,6 +8,7 @@
 
 {
 	Dict *S_table_dict;
+	List *S_table_list;
 
 } SymbolTable_t;
 
@@ -47,7 +48,7 @@ void stInsertOperator(SymbolTable *st, char *symbol, int prec, int assoc, Operat
 
 	//insert in dictionnary
 	dictInsert(st->S_table_dict, symbol, newStructureOperation);
-	listAdd(List, newStructureOperation);
+	listAdd(st->S_table_list, newStructureOperation);
 }
 
 
@@ -61,7 +62,7 @@ void stInsertVariable(SymbolTable *st, char *symbol, double val) {
 	pt_val = val;
 
 	dictInsert(st->S_table_dict, symbol, pt_val);
-	listAdd(List, pt_val);
+	listAdd(st->S_table_list, pt_val);
 
 
 }
