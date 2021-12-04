@@ -25,9 +25,8 @@
 SymbolTable *stCreate(void){
 
 	SymbolTable * ST = malloc(sizeof(SymbolTable*));
-	Dict *table = dictCreate(500);
-
-	ST->S_table_dict = table;
+	ST->S_table_dict = dictCreate(500);
+	ST->S_table_list = listCreate();
 
 	return ST;
 
@@ -35,7 +34,8 @@ SymbolTable *stCreate(void){
 
 // void dictFree(Dict *d);
 void stFree(SymbolTable *st) {
-	dictFree(Dict *st->S_table_dict);
+	dictFree(st->S_table_dict);
+	free(st->S_table_);
 	free(st);
 
 }
