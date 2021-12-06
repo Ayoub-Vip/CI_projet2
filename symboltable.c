@@ -115,7 +115,7 @@ int stGetOperatorPrec(SymbolTable *st, char *symbol) {
 	if (stContainsOperator(st, symbol))
 		return dictContains(st, symbol)->prec;
 	else
-		return -1;
+		return NULL;
 
 }
 
@@ -125,7 +125,7 @@ int stGetOperatorAssoc(SymbolTable *st, char *symbol) {
 	if (stContainsOperator(st, symbol))
 		return dictContains(st, symbol)->assoc;
 	else
-		return -1;
+		return NULL;
 
 }
 
