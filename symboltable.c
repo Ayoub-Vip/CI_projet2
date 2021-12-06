@@ -1,5 +1,5 @@
-#include <stdio.h>
-#include <math.h>
+// #include <stdio.h>
+// #include <math.h>
 
 #include "symboltable.h"
 #include "list.h"
@@ -24,7 +24,7 @@
 
 SymbolTable *stCreate(void){
 
-	SymbolTable * ST = malloc(sizeof(SymbolTable*));
+	SymbolTable * ST = malloc(sizeof(SymbolTable));
 	ST->S_table_dict = dictCreate(500);
 	ST->S_table_list = listCreate();
 
@@ -34,8 +34,14 @@ SymbolTable *stCreate(void){
 
 // void dictFree(Dict *d);
 void stFree(SymbolTable *st) {
+	// Node *cur = l->first;
+	// while (cur) {
+	// 	Node *next = cur->next;
+	// 	free(*(cur->data))
+	// 	cur = next;
+	// }
 	dictFree(st->S_table_dict);
-	free(st->S_table_);
+	listFree(st->S_table_list);
 	free(st);
 
 }
