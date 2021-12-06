@@ -15,12 +15,19 @@
 {
 	int prec;
 	bool assoc;
-	OperatorFctType opf;
+	double (*f)(double, double);
 
 } Operator_STR;
+
+typedef struct FunctionStruct_t {
+	double (*f)(double);
+}FunctionStruct;
+
 // {
 // 	FunctionFctType;
 // }Function_STR;
+
+
 
 SymbolTable *stCreate(void){
 
@@ -51,6 +58,7 @@ void stInsertOperator(SymbolTable *st, char *symbol, int prec, int assoc, Operat
 	Operator_STR* newStructureOperation = malloc(sizeof(Operator_STR));
 	newStructureOperation->prec = prec;
 	newStructureOperation->assoc = assoc;
+	newStructureOperation->f = opf;
 
 	//insert in dictionnary
 	dictInsert(st->S_table_dict, symbol, newStructureOperation);
@@ -59,7 +67,11 @@ void stInsertOperator(SymbolTable *st, char *symbol, int prec, int assoc, Operat
 
 
 void stInsertFunction(SymbolTable *st, char *symbol, FunctionFctType f) {
-	dictInsert(st->S_table_dict, symbol, f);
+	
+	FunctionStruct* Function = malloc(sizeof(FunctionStruct));
+	Function->f = f;
+	dictInsert(st->S_table_dict, symbol, Function);
+	listAdd(st->S_table_list, Function);
 }
 
 
@@ -91,7 +103,7 @@ int stContainsVariable(SymbolTable *st, char *symbol) {
 OperatorFctType stGetOperatorFct(SymbolTable *st, char *symbol) {
 
 	if (stContainsOperator(st, symbol))
-		return dictContains(st, symbol)->opf;
+		return dictContains(st, symbol)->f;
 	else
 		return NULL;
 
@@ -103,7 +115,7 @@ int stGetOperatorPrec(SymbolTable *st, char *symbol) {
 	if (stContainsOperator(st, symbol))
 		return dictContains(st, symbol)->prec;
 	else
-		return NULL;
+		return -1;
 
 }
 
@@ -113,7 +125,7 @@ int stGetOperatorAssoc(SymbolTable *st, char *symbol) {
 	if (stContainsOperator(st, symbol))
 		return dictContains(st, symbol)->assoc;
 	else
-		return NULL;
+		return -1;
 
 }
 
@@ -121,7 +133,7 @@ int stGetOperatorAssoc(SymbolTable *st, char *symbol) {
 FunctionFctType stGetFunctionFct(SymbolTable *st, char *symbol) {
 
 	if (stContainsOperator(st, symbol))
-		return dictContains(st, symbol);
+		return dictContains(st, symbol)->f;
 	else
 		fprintf(stderr,'the C prec Function was not founded');
 	return NULL;
@@ -131,13 +143,13 @@ FunctionFctType stGetFunctionFct(SymbolTable *st, char *symbol) {
 
 int stGetVariableValue(SymbolTable *st, char *symbol, double* result) {
 
-	if (stContainsOperator(st, symbol)){
+	if (stContainsVariable(st, symbol)){
 		result = dictContains(st, symbol);
 		return 1;
 		}
 	else
 		fprintf(stderr,'the C prec Function was not founded');
-	return NULL;
+	return 0;
 
 }
 
