@@ -59,44 +59,64 @@ int syEvaluate(Tokenizer *tokenizer, SymbolTable *st, double* solution)
 		 
 		 else if(tokentype == T_OPERATOR)
 		 {
-			 while( ...)
+			 char* symbol_op1 = tokenGetValue(token);
+			 token* token_top = stackTop(Sop);
+			 
+			 while( tokenGetType(token_top) == T_OPERATOR )
 			 {
-				 if(p1<p2 || (p1==p2 && assp1 == 0))
+				 int prec_op1 = stGetOperatorPrec(st, symbol_op1);
+				 int prec_op2 = stGetOperatorPrec(st, tokenGetValue(token_top));
+				 int assoc_op2 = stGetOperatorAssoc(st, tokenGetValue(token_top)); 
+				 
+				 if(prec_op1 == -1 || prec_op2 == -1 || assoc_op2 == -1)
+					 exit(failure);
+				 
+				 if(prec_op2 > prec_op1 || (prec_op1 == prec_op2 && assoc_op2 == 0))
 				 {
-					 symbol = pop(sop);
-					 v1 = pop(sval);
-					 v2 = pop(sval);
-					 f = stGetOperatorFct(SymbolTable *st, char *symbol)
+					 token_top = stackPop(Sop);
+					 double* v1 = stackPop(Sval);
+					 double* v2 = stackPop(Sval);
 					 
-					 push(sval, f(v2,v1));
+					 OperatorFctType f = stGetOperatorFct(st, tokenGetValue(token_top));
+					 double *val = malloc(sizeof(double));
+					 val = &f(*v2,*v1);
+					 
+					 stackPush(Sval, val);
 				 }
-				 op1 = pop(sop)
+				 
+				 token_top = stackTop(Sop);
 			 }
+			 
+			 stackPush(Sop, token);
+			 
 		 }
 		 
 		 else if(tokentype == T_RIGHTPAR)
 		 {
-			 while(tokentype != T_LEFTPAR)
+			 token_top = stackTop(Sop);
+			 
+			 while(tokenGetType(token_top) != T_LEFTPAR)
 			 {
-				 	 symbol = pop(sop);
-					 v1 = pop(sval);
-					 v2 = pop(sval);
-					 f = stGetOperatorFct(SymbolTable *st, char *symbol)
-					 push(sval, f(v2, v1));
+				 	 token = stackPop(Sop);
+					 double* v1 = stackPop(Sval);
+					 double* v2 = stackPop(Sval);
+					 OperatorFctType f = stGetOperatorFct(st, tokenGetValue(token));
+					 double* val = malloc(sizeof(double));
+					 val = &f(*v2, *v1)
+					 stackPush(Sval,val);
 			 }
 			 
-			 op = pop(sop);
+			 token* token_L= stackPop(Sop);
 			 
-			 if(tokenGetType(top(sop)) == SYMBOL)
+			 if(tokenGetType(stackTop(Sop)) == T_SYMBOL)
 			 {
-				 double v = pop(sval);
-				 f = stGetFunctionFct(st, tokenGetValue(top(sop)) ;
-				 push(sval, f(v));
+				 double *v = stackPop(Sval);
+				 FunctionFctType f = stGetFunctionFct(st, tokenGetValue(stackTop(Sop));
+				 double* val = malloc(sizeof(double));
+				 val = &f(*v)
+				 stackPush(Sval, val);
 			 }
-		 }
-			 
-					 
-					 
+		 }			 
 			 
 			 
 			
