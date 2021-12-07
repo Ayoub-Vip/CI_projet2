@@ -9,42 +9,53 @@ static SymbolTable* Newtable(Tokenizer* tokenizer)
 	SymbolTable* st = stcreate();
 	
 }
-
 int syEvaluate(Tokenizer *tokenizer, SymbolTable *st, double* solution)
 {
-	while()
+	Stack *Sop  = stackCreate();
+	Stack *Sval = stackCreate();
+
+	Token * token = tokenizerGetNextToken(tokenizer);
+	TokenType tokentype;
+
+	while( tokenGetType(token) != T_STOP )
 	{
-		token = Token *tokenizerGetNextToken(Tokenizer *tokenizer) ;
-		tokentype = tokenGetType(Token *token);
-		
+		tokentype = tokenGetType(token);
 		 if(tokentype == T_NUMBER)
 		 {
-			 double *a = tokenGetValue(Token *token);
-			 push(sval, a);
+			double *a = tokenGetValue(token);
+			push(Sval, a);
 		 }
-		 
-		 else if(tokentype == LEFTPAR)
+		 else if(tokentype == T_LEFTPAR)
 		 {
-			 push(sop, token);
+			push(Sop, token);
 		 }
-		 
 		 else if(tokentype == T_SYMBOL)
 		 {
-			 if( gettype(tokenizerGetNextToken(tokenizer)) == LEFTPAR)
-			 {
-				 push(sop, token);
-			 }
+		 	//tokenizerGetNextToken -> pos++
+		 	TokenType tkt_symbol_aux = tokentype;
+		 	token = tokenizerGetNextToken(tokenizer);
+
+			if(tokenGetType(token) == T_LEFTPAR)
+			{
+				push(Sop, tkt_aux);
+				push(Sop, token);
+			}
 			 else
 			 {
-				 double *result = malloc(sizeof(double));
-				 int a = stGetVariableValue(st, ...,result);
+				double *result = malloc(sizeof(double));
+				int a = stGetVariableValue(st, tokenGetValue(token),result);
 				 
-				 if(a==1)
-					 push(Sval, *result)
-				 else
-					 fprintf(stderr, "pas de variable");
+				if(a)
+					push(Sval, *result)
+					continue;
+				else{
+						fprintf(stderr, "le variable \' %s \'n'a pas ete declare!\n", tokenGetValue(token));
+						exit(-1);
+					}
+
 			 }
 		 }
+		 
 		 
 		 else if(tokentype == T_OPERATOR)
 		 {
