@@ -1,31 +1,29 @@
-// #include <stdio.h>
-// #include <math.h>
-
 #include "symboltable.h"
 #include "list.h"
 #include "dict.h"
 #include "stack.h"
+#include "stdlib.h"
 
-{
+struct SymbolTable_t {
 	Dict *S_table_dict;
 	List *S_table_list;
 
-} SymbolTable_t;
+} ;
 
-{
+typedef struct  {
 	int prec;
-	bool assoc;
+	int assoc;
 	double (*f)(double, double);
 
 } Operator_STR;
 
-typedef struct FunctionStruct_t {
+typedef struct {
 	double (*f)(double);
-}FunctionStruct;
+} FunctionStruct;
 
-// {
-// 	FunctionFctType;
-// }Function_STR;
+typedef struct {
+	FunctionFctType opt;
+} Function_STR;
 
 
 
@@ -55,7 +53,7 @@ void stFree(SymbolTable *st) {
 
 void stInsertOperator(SymbolTable *st, char *symbol, int prec, int assoc, OperatorFctType opf) {
 	//create structure
-	Operator_STR* newStructureOperation = malloc(sizeof(Operator_STR));
+	Operator_STR *newStructureOperation = malloc(sizeof(Operator_STR));
 	newStructureOperation->prec = prec;
 	newStructureOperation->assoc = assoc;
 	newStructureOperation->f = opf;
@@ -77,7 +75,7 @@ void stInsertFunction(SymbolTable *st, char *symbol, FunctionFctType f) {
 
 void stInsertVariable(SymbolTable *st, char *symbol, double val) {
 	double *pt_val = malloc(sizeof(double));
-	pt_val = val;
+	*pt_val = val;
 
 	dictInsert(st->S_table_dict, symbol, pt_val);
 	listAdd(st->S_table_list, pt_val);
@@ -86,36 +84,38 @@ void stInsertVariable(SymbolTable *st, char *symbol, double val) {
 }
 
 int stContainsOperator(SymbolTable *st, char *symbol) {
-	return dictContains(st->S_table_dict, symbol)
+	return dictContains(st->S_table_dict, symbol);
 }
 
 
 int stContainsFunction(SymbolTable *st, char *symbol) {
-	return dictContains(st->S_table_dict, symbol)
+	return dictContains(st->S_table_dict, symbol);
 }
 
 
 int stContainsVariable(SymbolTable *st, char *symbol) {
-	return dictContains(st->S_table_dict, symbol)
+	return dictContains(st->S_table_dict, symbol);
 }
 
 
 OperatorFctType stGetOperatorFct(SymbolTable *st, char *symbol) {
 
 	if (stContainsOperator(st, symbol))
-		return dictContains(st, symbol)->f;
+		return dictContains(st->S_table_dict, symbol)->f;
 	else
-		return NULL;
+		return 0;
 
 }
 
 
 int stGetOperatorPrec(SymbolTable *st, char *symbol) {
 
-	if (stContainsOperator(st, symbol))
-		return dictContains(st, symbol)->prec;
+	if (stContainsOperator(st, symbol)){
+		Operator_STR* oppt = dictContains(st->S_table_dict, symbol);
+			return oppt->prec;
+	}
 	else
-		return NULL;
+		return 0;
 
 }
 
@@ -123,9 +123,9 @@ int stGetOperatorPrec(SymbolTable *st, char *symbol) {
 int stGetOperatorAssoc(SymbolTable *st, char *symbol) {
 
 	if (stContainsOperator(st, symbol))
-		return dictContains(st, symbol)->assoc;
+		return dictContains(st->S_table_dict, symbol)->assoc;
 	else
-		return NULL;
+		return 0;
 
 }
 
@@ -133,10 +133,10 @@ int stGetOperatorAssoc(SymbolTable *st, char *symbol) {
 FunctionFctType stGetFunctionFct(SymbolTable *st, char *symbol) {
 
 	if (stContainsOperator(st, symbol))
-		return dictContains(st, symbol)->f;
+		return dictContains(st->S_table_dict, symbol)->f;
 	else
 		fprintf(stderr,'the C prec Function was not founded');
-	return NULL;
+	return 0;
 
 }
 
@@ -144,7 +144,7 @@ FunctionFctType stGetFunctionFct(SymbolTable *st, char *symbol) {
 int stGetVariableValue(SymbolTable *st, char *symbol, double* result) {
 
 	if (stContainsVariable(st, symbol)){
-		result = dictContains(st, symbol);
+		result = dictContains(st->S_table_dict, symbol);
 		return 1;
 		}
 	else
@@ -152,4 +152,3 @@ int stGetVariableValue(SymbolTable *st, char *symbol, double* result) {
 	return 0;
 
 }
-
