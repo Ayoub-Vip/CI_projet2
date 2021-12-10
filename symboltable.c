@@ -3,6 +3,7 @@
 #include "dict.h"
 #include "stack.h"
 #include "stdlib.h"
+#include "stdio.h"
 
 struct SymbolTable_t {
 	Dict *S_table_dict;
@@ -101,7 +102,7 @@ int stContainsVariable(SymbolTable *st, char *symbol) {
 OperatorFctType stGetOperatorFct(SymbolTable *st, char *symbol) {
 
 	if (stContainsOperator(st, symbol))
-		return dictContains(st->S_table_dict, symbol)->f;
+		return (OperatorFctType) (( (Operator_STR*) dictSearch(st->S_table_dict, symbol))->f);
 	else
 		return 0;
 
@@ -111,7 +112,7 @@ OperatorFctType stGetOperatorFct(SymbolTable *st, char *symbol) {
 int stGetOperatorPrec(SymbolTable *st, char *symbol) {
 
 	if (stContainsOperator(st, symbol)){
-		Operator_STR* oppt = dictContains(st->S_table_dict, symbol);
+		Operator_STR* oppt = dictSearch(st->S_table_dict, symbol);
 			return oppt->prec;
 	}
 	else
@@ -123,7 +124,7 @@ int stGetOperatorPrec(SymbolTable *st, char *symbol) {
 int stGetOperatorAssoc(SymbolTable *st, char *symbol) {
 
 	if (stContainsOperator(st, symbol))
-		return dictContains(st->S_table_dict, symbol)->assoc;
+		return (int)(((Operator_STR*) dictSearch(st->S_table_dict, symbol))->assoc);
 	else
 		return 0;
 
@@ -133,9 +134,9 @@ int stGetOperatorAssoc(SymbolTable *st, char *symbol) {
 FunctionFctType stGetFunctionFct(SymbolTable *st, char *symbol) {
 
 	if (stContainsOperator(st, symbol))
-		return dictContains(st->S_table_dict, symbol)->f;
+		return (FunctionFctType) ((FunctionStruct*) dictSearch(st->S_table_dict, symbol))->f;
 	else
-		fprintf(stderr,'the C prec Function was not founded');
+		fprintf(stderr,"the C prec Function was not founded");
 	return 0;
 
 }
@@ -144,11 +145,11 @@ FunctionFctType stGetFunctionFct(SymbolTable *st, char *symbol) {
 int stGetVariableValue(SymbolTable *st, char *symbol, double* result) {
 
 	if (stContainsVariable(st, symbol)){
-		result = dictContains(st->S_table_dict, symbol);
+		*result = (double) *((double*) dictSearch(st->S_table_dict, symbol));
 		return 1;
 		}
 	else
-		fprintf(stderr,'the C prec Function was not founded');
+		fprintf(stderr,"the C prec Function was not founded");
 	return 0;
 
 }
