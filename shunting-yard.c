@@ -21,10 +21,10 @@ int syEvaluate(Tokenizer *tokenizer, SymbolTable *st, double* solution)
 
 	while( tokenGetType(token) != T_STOP )
 	{
-		tokentype = tokenGetType(token);
+		 tokentype = tokenGetType(token);
 		 if(tokentype == T_NUMBER)
 		 {
-			double *a = tokenGetValue(token);
+			double *a = (double*) tokenGetValue(token);
 			stackPush(Sval, a);
 		 }
 		 else if(tokentype == T_LEFTPAR)
@@ -34,13 +34,13 @@ int syEvaluate(Tokenizer *tokenizer, SymbolTable *st, double* solution)
 		 else if(tokentype == T_SYMBOL)
 		 {
 		 	//tokenizerGetNextToken -> pos++
-		 	Token *tkn_symbol_aux = token;
-		 	token = tokenizerGetNextToken(tokenizer);
+		 	//Token *tkn_symbol_aux = token;
+		 	Token* token_next = tokenizerGetNextToken(tokenizer);
 
-			if(tokenGetType(token) == T_LEFTPAR)
+			if(tokenGetType(token_next) == T_LEFTPAR)
 			{
-				stackPush(Sop, tkn_symbol_aux);
 				stackPush(Sop, token);
+				//stackPush(Sop, token);
 			}
 			 else
 			 {
@@ -50,7 +50,9 @@ int syEvaluate(Tokenizer *tokenizer, SymbolTable *st, double* solution)
 				if(a){
 							stackPush(Sval, result);
 							continue;
-				}else{
+				}
+				
+				else{
 						    // fprintf(stderr, "le variable \' %s \'n'a pas ete declare!\n", tokenGetValue(token));
 						    exit(-1);
 					}
@@ -63,21 +65,31 @@ int syEvaluate(Tokenizer *tokenizer, SymbolTable *st, double* solution)
 			 char* symbol_op1 = malloc(sizeof(char));
 			 symbol_op1 = tokenGetValue(token);
 			 // Token* token_top = malloc(sizeof(Token));
-			 Token* token_top = stackTop(Sop);
 			 
-			 while( tokenGetType(token_top) == T_OPERATOR )
+			 //Token* token_top = stackTop(Sop);
+			 
+			 while( !(stackIsEmpty(Sop)) && tokenGetType(stackTop(Sop)) == T_OPERATOR )
 			 {
+				 Token* token_top = stackTop(Sop);
 				 int prec_op1 = stGetOperatorPrec(st, symbol_op1);
 				 int prec_op2 = stGetOperatorPrec(st, tokenGetValue(token_top));
 				 int assoc_op1 = stGetOperatorAssoc(st, symbol_op1); 
 				 
 				 if(prec_op1 == -1 || prec_op2 == -1 || assoc_op1 == -1)
-					 exit(-1);
+					 exit(EXIT_FAILURE);
 				 
 				 if(prec_op2 > prec_op1 || (prec_op1 == prec_op2 && assoc_op1 == 0))
 				 {
 					 token_top = stackPop(Sop);
+					 
+					 if(stackIsEmpty(Sval))
+						 exit(EXIT_FAILURE);
+					 
 					 double* v1 = stackPop(Sval);
+					 
+					 if(stackIsEmpty(Sval));
+					 exit(EXIT_FAILURE);
+					 
 					 double* v2 = stackPop(Sval);
 					 
 					 OperatorFctType f = stGetOperatorFct(st, tokenGetValue(token_top));
@@ -87,27 +99,40 @@ int syEvaluate(Tokenizer *tokenizer, SymbolTable *st, double* solution)
 					 stackPush(Sval, val);
 				 }
 				 
-				 token_top = stackTop(Sop);
+				 //token_top = stackTop(Sop);
 			 }
 			 
 			 stackPush(Sop, token);
 			 
 			 free(symbol_op1);
-			 free(token_top);
 			 
 		 }
 		 
 		 else if(tokentype == T_RIGHTPAR)
 		 {
 			 // Token* token_top = malloc(sizeof(Token));
-			 Token* token_top = stackTop(Sop);
+			 //Token* token_top = stackTop(Sop);
 			 
-			 while(tokenGetType(token_top) != T_LEFTPAR)
+			 if(stackIsEmpty(Sop))
+				 exit(EXIT_FAILURE);
+			 
+			 while(tokenGetType(stackTop(Sop)) != T_LEFTPAR)
 			 {
-				 	 token = stackPop(Sop);
+				     
+				 	 Token* token_top = stackPop(Sop);
+					 
+					 if(stackIsEmpty(Sop))
+						 exit(EXIT_FAILURE);
+					 
+					 if(stackIsEmpty(Sval))
+						 exit(EXIT_FAILURE);
 					 double* v1 = stackPop(Sval);
+					 
+					 if(stackIsEmpty(Sval))
+						 exit(EXIT_FAILURE);
 					 double* v2 = stackPop(Sval);
-					 OperatorFctType f = stGetOperatorFct(st, tokenGetValue(token));
+					 
+					 OperatorFctType f = stGetOperatorFct(st, tokenGetValue(token_top));
 					 double* val = malloc(sizeof(double));
 					 *val = f(*v2, *v1);
 					 stackPush(Sval,val);
@@ -116,7 +141,7 @@ int syEvaluate(Tokenizer *tokenizer, SymbolTable *st, double* solution)
 			 // Token* token_L= malloc(sizeof(Token));
 			 Token* token_L = stackPop(Sop);
 			 
-			 if(tokenGetType(stackTop(Sop)) == T_SYMBOL)
+			 if(!(stackIsEmpty(Sop)) && tokenGetType(stackTop(Sop)) == T_SYMBOL)
 			 {
 				 double *v = stackPop(Sval);
 				 FunctionFctType f = stGetFunctionFct(st, tokenGetValue(stackTop(Sop)));
@@ -124,12 +149,9 @@ int syEvaluate(Tokenizer *tokenizer, SymbolTable *st, double* solution)
 				 *val = f(*v);
 				 stackPush(Sval, val);
 			 }
-			 
-			 free(token_top);
-			 free(token_L);
 		 }
 		 
-		 while(tokenGetType(stackTop(Sop)) == T_OPERATOR)
+		 while( !(stackIsEmpty(Sop)) && tokenGetType(stackTop(Sop)) == T_OPERATOR)
 			 
 		 {
 			 // Token* token_top = malloc(sizeof(Token));
@@ -144,9 +166,20 @@ int syEvaluate(Tokenizer *tokenizer, SymbolTable *st, double* solution)
 			 *val = f(*v2, *v1);
 			 
 			 stackPush(Sval, val);
-			 free(token_top);
 		 }
-
+	}
+	
+	if(stackIsEmpty(Sop))
+		return 0;
+	else
+	{
+		solution = stackPop(Sval);
+		
+		if(stackIsEmpty(Sval))
+			return 0;
+		else
+			return 1
+	}
 }
 	 
 		
