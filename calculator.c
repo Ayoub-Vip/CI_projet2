@@ -10,10 +10,28 @@
 #include "symboltable.h"
 #include "shunting-yard.h"
 
+  static double add(double a, double b){return a+b;}
+  static double mun(double a, double b){return a-b;}
+  static double mul(double a, double b){return a*b;}
+  static double divv(double a, double b){return a/b;}
+  // static double exps(double a, double b){if(b) return a*exps(a, b-1);}
 SymbolTable *calcInitSymbolTable() {
-  SymbolTable *st = NULL;
+  // SymbolTable *st = NULL;
 
   // Implementation
+
+  SymbolTable *st = stCreate();
+  stInsertOperator(st, "+", 1, 0, add);
+  stInsertOperator(st, "-", 1, 0, mun);
+  stInsertOperator(st, "*", 2, 0, mul);
+  stInsertOperator(st, "/", 2, 0, divv);
+  stInsertOperator(st, "^", 3, 1, pow);
+
+  stInsertFunction(st, "sin", sin);
+  stInsertFunction(st, "cos", cos);
+  stInsertFunction(st, "tan", tan);
+  stInsertFunction(st, "log", log);
+  stInsertFunction(st, "sqrt", sqrt);
 
   return st;
 }
@@ -22,9 +40,9 @@ void calcRepl() {
 
   char *line = NULL;
   size_t len = 0;
-  size_t lineSize;
+  int lineSize;
 
-  SymbolTable *st = calcInitSymbolTable();
+  SymbolTable *st =  calcInitSymbolTable();
 
   printf("Calculator 0.0.1\n");
   printf("Type \"help\" for more information\n");
