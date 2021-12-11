@@ -22,8 +22,7 @@ int syEvaluate(Tokenizer *tokenizer, SymbolTable *st, double* solution)
 	TokenType tokentype;
 
 
-	while( tokenGetType(token) != T_STOP)
-	{
+	while( tokenGetType(token) != T_STOP)  {
 
 		fprintf(stderr, "while principle\n");
 
@@ -36,16 +35,21 @@ int syEvaluate(Tokenizer *tokenizer, SymbolTable *st, double* solution)
 			listAdd(list, a);
 			*a =  *((double*) tokenGetValue(token));
 			stackPush(Sval, a);
-			// fprintf(stderr, "le variable %f!\n", *((double*)stackTop(Sval)));
+			fprintf(stderr, "T_NUMBER: le variable %f!\n", *((double*)stackTop(Sval)));
 		 }
 
 		 else if(tokentype == T_LEFTPAR)
 		 {
 			stackPush(Sop, token);
+			// fprintf(stderr, "T_LEFTPAR le variable %f!\n", *((double*)stackTop(Sval)));
+			// fprintf(stderr, "T_LEFTPAR le variable %f!\n", *((double*)stackTop(Sop)));
+
 		 }
 
 		 else if(tokentype == T_SYMBOL)
 		 {
+			 fprintf(stderr, "Le if tokentype == T_SYMBOL?\n");
+
 		 	//tokenizerGetNextToken -> pos++
 		 	Token* token_next = tokenizerGetNextToken(tokenizer);
 
@@ -53,6 +57,8 @@ int syEvaluate(Tokenizer *tokenizer, SymbolTable *st, double* solution)
 			{
 				stackPush(Sop, token);
 				stackPush(Sop, token_next);
+			 fprintf(stderr, "Le if tokentype == T_SYMBOL, T_LEFTPARt\n");
+
 			}
 			else
 			{
@@ -62,7 +68,7 @@ int syEvaluate(Tokenizer *tokenizer, SymbolTable *st, double* solution)
 
 				if(a){
 					stackPush(Sval, result);
-					token = token_next;
+					token = tokenizerGetNextToken(tokenizer);
 					continue;
 				}
 
@@ -83,9 +89,11 @@ int syEvaluate(Tokenizer *tokenizer, SymbolTable *st, double* solution)
 			 char *symbol_op1 = tokenGetValue(token);
 			 //Token* token_top = stackTop(Sop);
 
-			 while( !(stackIsEmpty(Sop)) && tokenGetType(stackTop(Sop)) == T_OPERATOR )
+			 fprintf(stderr, "Le if tokentype == T_OPERATOR\n");
+
+			 while( !(stackIsEmpty(Sop)) && tokenGetType(stackTop(Sop)) == T_OPERATOR)
 			 {
-		fprintf(stderr, "while 1\n");
+			 	 fprintf(stderr, "while 1\n");
 
 				 Token* token_top = stackTop(Sop);
 				 int prec_op1 = stGetOperatorPrec(st, symbol_op1);
@@ -124,7 +132,12 @@ int syEvaluate(Tokenizer *tokenizer, SymbolTable *st, double* solution)
 					 *val = f(*v2,*v1);
 
 					 stackPush(Sval, val);
+					 fprintf(stderr, "while 1 le variable %f!\n", *((double*)stackTop(Sval)));
+					 fprintf(stderr, "While 1le variable %d!\n", (stackIsEmpty(Sop)));
+
 				 }
+				 else
+				 	break;
 
 				 //token_top = stackTop(Sop);
 			 }
@@ -140,71 +153,104 @@ int syEvaluate(Tokenizer *tokenizer, SymbolTable *st, double* solution)
 		 {
 			 // Token* token_top = malloc(sizeof(Token));
 			 //Token* token_top = stackTop(Sop);
+			 fprintf(stderr, "Le if tokentype == T_RIGHTPAR\n");
 
 			 if(stackIsEmpty(Sop)){
-			 				 exit(EXIT_FAILURE);}
+			 fprintf(stderr, "Sop is empty-no func\n");
+			 	 exit(EXIT_FAILURE);}
 
 			 while(tokenGetType(stackTop(Sop)) != T_LEFTPAR)
 			 {
-		fprintf(stderr, "while 2\n");
+		fprintf(stderr, "while 2.1\n");
+
+					 if(stackIsEmpty(Sop)){
+			 fprintf(stderr, "Sop is empty-no func\n");
+					 	 exit(EXIT_FAILURE);}
 
 				 	 Token* token_top = stackPop(Sop);
 
-					 if(stackIsEmpty(Sop)){
-					 	 exit(EXIT_FAILURE);}
-
 					 if(stackIsEmpty(Sval)){
+			 fprintf(stderr, "Sval is empty-no var\n");
 					 	 exit(EXIT_FAILURE);}
 					 double* v1 = stackPop(Sval);
 
 					 if(stackIsEmpty(Sval)){
+			 fprintf(stderr, "Sval is empty-no var\n");
 					 	 exit(EXIT_FAILURE);}
 					 double* v2 = stackPop(Sval);
 
 					 OperatorFctType f = stGetOperatorFct(st, tokenGetValue(token_top));
 					 double* val = malloc(sizeof(double));
+					 listAdd(list, val);
 					 *val = f(*v2, *v1);
 					 stackPush(Sval,val);
+
+					 fprintf(stderr, "while 2 le variable %f!\n", *((double*)stackTop(Sval)));
+					 // fprintf(stderr, "While 2 le variable %f!\n", *((double*)stackTop(Sop)));
 			 }
 
 			 // Token* token_L= malloc(sizeof(Token));
-			 Token* token_L = stackPop(Sop);
+			 if (tokenGetType(stackTop(Sop)) == T_LEFTPAR){
+			 			 	Token* token_L = stackPop(Sop);
+			 			 	printf("T_LEFTPAR est retire\n");}
 
 			 if(!(stackIsEmpty(Sop)) && tokenGetType(stackTop(Sop)) == T_SYMBOL)
 			 {
 				 double *v = stackPop(Sval);
 				 FunctionFctType f = stGetFunctionFct(st, tokenGetValue(stackTop(Sop)));
 				 double* val = malloc(sizeof(double));
+				 listAdd(list, val);
 				 *val = f(*v);
 				 stackPush(Sval, val);
+
+					 // fprintf(stderr, "while 2.1 le variable %f!\n", *((double*)stackTop(Sval)));
+					 // fprintf(stderr, "While 2.1 le variable %f!\n", *((double*)stackTop(Sop)));
 			 }
 		 }
 
-		 while( !(stackIsEmpty(Sop)) && tokenGetType(stackTop(Sop)) == T_OPERATOR)
+
+					 // fprintf(stderr, "while3 juste avant  le variable %f!\n", *((double*)stackTop(Sval)));
+					 // fprintf(stderr, "While 3le variable %f!\n", *((double*)stackTop(Sop)));
+
+		 
+		 token = tokenizerGetNextToken(tokenizer);
+	}
+	while( !(stackIsEmpty(Sop)) && tokenGetType(stackTop(Sop)) == T_OPERATOR)
 		 {
-		fprintf(stderr, "while 3\n");
+		fprintf(stderr, "while X3\n");
 
 			 // Token* token_top = malloc(sizeof(Token));
 			 Token* token_top = stackPop(Sop);
 
+			 if(stackIsEmpty(Sval)){
+			 	fprintf(stderr, "sop empty for V1\n");
+				 exit(EXIT_FAILURE);}
 			 double* v1 = stackPop(Sval);
+			 
+			fprintf(stderr, "while 3 le variableV1 %f!\n", *v1);
+
+
+			 if(stackIsEmpty(Sval)){
+			 	fprintf(stderr, "sop empty for V2\n");
+				 exit(EXIT_FAILURE);}
+			 
 			 double* v2 = stackPop(Sval);
 
 			 OperatorFctType f = stGetOperatorFct(st, tokenGetValue(token_top));
 			 double* val  = malloc(sizeof(double));
+			 listAdd(list, val);
 
 			 *val = f(*v2, *v1);
 
 			 stackPush(Sval, val);
+
 		 }
-		 token = tokenizerGetNextToken(tokenizer);
-	}
 	// listFree(list);
-//  QUAND ON A pas tjrs doperation donc sop peut etre vide
-// 	if(stackIsEmpty(Sop))
-// 		return 0;
-// 	else
-// 	{
+
+	// if(!stackIsEmpty(Sop))
+	// 	return 0;
+	// else
+	// {
 		if(stackIsEmpty(Sval))
 			return 0;
 		else{
@@ -212,7 +258,7 @@ int syEvaluate(Tokenizer *tokenizer, SymbolTable *st, double* solution)
 				return 1;
 			}
 
-// 	}
+	// }
 
 
 }
