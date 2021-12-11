@@ -68,7 +68,7 @@ int syEvaluate(Tokenizer *tokenizer, SymbolTable *st, double* solution)
 
 				if(a){
 					stackPush(Sval, result);
-					token = tokenizerGetNextToken(tokenizer);
+					token = token_next;
 					continue;
 				}
 
@@ -159,7 +159,7 @@ int syEvaluate(Tokenizer *tokenizer, SymbolTable *st, double* solution)
 			 fprintf(stderr, "Sop is empty-no func\n");
 			 	 exit(EXIT_FAILURE);}
 
-			 while(tokenGetType(stackTop(Sop)) != T_LEFTPAR)
+			 while(!stackIsEmpty(Sop) && tokenGetType(stackTop(Sop)) != T_LEFTPAR)
 			 {
 		fprintf(stderr, "while 2.1\n");
 
@@ -185,14 +185,15 @@ int syEvaluate(Tokenizer *tokenizer, SymbolTable *st, double* solution)
 					 *val = f(*v2, *v1);
 					 stackPush(Sval,val);
 
-					 fprintf(stderr, "while 2 le variable %f!\n", *((double*)stackTop(Sval)));
+					 // fprintf(stderr, "while 2 le variable %f!\n", *((double*)stackTop(Sval)));
 					 // fprintf(stderr, "While 2 le variable %f!\n", *((double*)stackTop(Sop)));
 			 }
 
 			 // Token* token_L= malloc(sizeof(Token));
-			 if (tokenGetType(stackTop(Sop)) == T_LEFTPAR){
+			 if (!stackIsEmpty(Sop) && tokenGetType(stackTop(Sop)) == T_LEFTPAR){
 			 			 	Token* token_L = stackPop(Sop);
-			 			 	printf("T_LEFTPAR est retire\n");}
+			 			 	printf("T_LEFTPAR est retire\n");
+			 }
 
 			 if(!(stackIsEmpty(Sop)) && tokenGetType(stackTop(Sop)) == T_SYMBOL)
 			 {
@@ -208,9 +209,6 @@ int syEvaluate(Tokenizer *tokenizer, SymbolTable *st, double* solution)
 			 }
 		 }
 
-
-					 // fprintf(stderr, "while3 juste avant  le variable %f!\n", *((double*)stackTop(Sval)));
-					 // fprintf(stderr, "While 3le variable %f!\n", *((double*)stackTop(Sop)));
 
 		 
 		 token = tokenizerGetNextToken(tokenizer);
