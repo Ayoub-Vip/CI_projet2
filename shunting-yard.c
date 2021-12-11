@@ -200,11 +200,11 @@ int syEvaluate(Tokenizer *tokenizer, SymbolTable *st, double* solution)
 		 token = tokenizerGetNextToken(tokenizer);
 	}
 	// listFree(list);
-
-	if(stackIsEmpty(Sop))
-		return 0;
-	else
-	{
+//  QUAND ON A pas tjrs doperation donc sop peut etre vide
+// 	if(stackIsEmpty(Sop))
+// 		return 0;
+// 	else
+// 	{
 		if(stackIsEmpty(Sval))
 			return 0;
 		else{
@@ -212,7 +212,7 @@ int syEvaluate(Tokenizer *tokenizer, SymbolTable *st, double* solution)
 				return 1;
 			}
 
-	}
+// 	}
 
 
 }
