@@ -52,7 +52,7 @@ int syEvaluate(Tokenizer *tokenizer, SymbolTable *st, double* solution)
 			if(tokenGetType(token_next) == T_LEFTPAR)
 			{
 				stackPush(Sop, token);
-				// stackPush(Sop, token_next);
+				stackPush(Sop, token_next);
 			}
 			else
 			{
