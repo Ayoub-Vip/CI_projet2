@@ -8,8 +8,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-int syEvaluate(Tokenizer *tokenizer, SymbolTable *st, double *solution) {
-
+int syEvaluate(Tokenizer *tokenizer, SymbolTable *st, double *solution)
+{
     Stack * Sop  = stackCreate();
     Stack * Sval = stackCreate();
     List * list  = listCreate();
@@ -158,7 +158,7 @@ int syEvaluate(Tokenizer *tokenizer, SymbolTable *st, double *solution) {
 
             }
 
-            Token * token_L = stackPop(Sop);
+            /*Token * token_L = */stackPop(Sop);
 
             if (!stackIsEmpty(Sop) && tokenGetType(stackTop(Sop)) == T_SYMBOL) {
                 double * v = stackPop(Sval);
@@ -206,17 +206,19 @@ int syEvaluate(Tokenizer *tokenizer, SymbolTable *st, double *solution) {
 
     // listFree(list);
 
-    if (!stackIsEmpty(Sop))
-        return 0;
+    if (!stackIsEmpty(Sop)) {
+            fprintf(stderr, "L\'expression nest pas correcte: il manque une parenthese ...\n");
+            exit(EXIT_FAILURE);
+        }
 
-    if (stackIsEmpty(Sval))
-        return 0;
-    else {
+    // if (stackIsEmpty(Sval))
+    //     return 0;
+    // else {
         *solution = (double) *((double *) stackPop(Sval));
-        listFree(list);
-        if (stackIsEmpty(Sval))
+        // listFree(list);
+        if (!stackIsEmpty(Sval))
             return 0;
         return 1;
-    }
+    // }
 
 }
