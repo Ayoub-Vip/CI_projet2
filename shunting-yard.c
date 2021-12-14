@@ -203,7 +203,7 @@ int syEvaluate(Tokenizer *tokenizer, SymbolTable *st, double *solution)
 
 
     if (!stackIsEmpty(Sop)) {
-            fprintf(stderr, "L'expression nest pas correcte: verifiez s'il manque une parenthese ...\n");
+            fprintf(stderr, "L'expression nest pas correcte: il manque une parenthese de fermeture...\n");
             exit(EXIT_FAILURE);
         }
 
