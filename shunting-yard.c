@@ -56,7 +56,7 @@ int syEvaluate(Tokenizer *tokenizer, SymbolTable *st, double *solution)
 
                 else {
 
-                    fprintf(stderr, "la variable n'a pas ete declarée!\n");
+                    fprintf(stderr,"la valeur de variable \'%s\' n'a pas ete trouvée!\n", (char*)tokenGetValue(token));
                     exit(-1);
                 }
 
@@ -128,7 +128,7 @@ int syEvaluate(Tokenizer *tokenizer, SymbolTable *st, double *solution)
 				
                 Token * token_top = stackPop(Sop);
 				
-				if (stackIsEmpty(Sop)) {
+		if (stackIsEmpty(Sop)) {
                     fprintf(stderr, "une parenthese est fermée sans avoir été ouverte\n");
                     exit(EXIT_FAILURE);
                 }
@@ -203,7 +203,7 @@ int syEvaluate(Tokenizer *tokenizer, SymbolTable *st, double *solution)
 
 
     if (!stackIsEmpty(Sop)) {
-            fprintf(stderr, "L'expression nest pas correcte: il manque une parenthese ...\n");
+            fprintf(stderr, "L'expression nest pas correcte: verifiez s'il manque une parenthese ...\n");
             exit(EXIT_FAILURE);
         }
 
