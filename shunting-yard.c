@@ -56,7 +56,7 @@ int syEvaluate(Tokenizer *tokenizer, SymbolTable *st, double *solution)
 
                 else {
 
-                    fprintf(stderr, "le variable s n'a pas ete declare!\n");
+                    fprintf(stderr, "la variable n'a pas ete declarée!\n");
                     exit(-1);
                 }
 
@@ -76,28 +76,24 @@ int syEvaluate(Tokenizer *tokenizer, SymbolTable *st, double *solution)
                 int assoc_op1 = stGetOperatorAssoc(st, symbol_op1);
 
                 if (prec_op1 == -1 || prec_op2 == -1 || assoc_op1 == -1) {
-                    fprintf(stderr, "les precedances \' s \'n'ont pas ete declare!\n");
+                    fprintf(stderr, "les opérateurs entrés n'existent pas!\n");
                     exit(EXIT_FAILURE);
                 }
 
                 if (prec_op2 > prec_op1 || (prec_op1 == prec_op2 && assoc_op1 == 0)) {
 
-                    if (stackIsEmpty(Sop)) {
-                        fprintf(stderr, "le Sop n'a pas ete trouve!\n");
-                        exit(EXIT_FAILURE);
-                    }
                     token_top = stackPop(Sop);
 
 
                     if (stackIsEmpty(Sval)) {
-                        fprintf(stderr, "le Sop n'a pas ete trouve!\n");
+                        fprintf(stderr, "il manque une valeur pour faire l'opération!\n");
                         exit(EXIT_FAILURE);
                     }
                     double * v1 = stackPop(Sval);
 
 
                     if (stackIsEmpty(Sval)) {
-                        fprintf(stderr, "le Sop n'a pas ete trouve!\n");
+                        fprintf(stderr, "il manque une valeur pour faire l'opération !\n");
                         exit(EXIT_FAILURE);
                     }
                     double * v2 = stackPop(Sval);
@@ -127,25 +123,26 @@ int syEvaluate(Tokenizer *tokenizer, SymbolTable *st, double *solution)
                 exit(EXIT_FAILURE);
             }
 
-            while (!stackIsEmpty(Sop) && tokenGetType(stackTop(Sop)) != T_LEFTPAR)
+            while (tokenGetType(stackTop(Sop)) != T_LEFTPAR)
             {
-
-                if (stackIsEmpty(Sop)) {
-                    fprintf(stderr, "Sop is empty-no func\n");
+				
+                Token * token_top = stackPop(Sop);
+				
+				if (stackIsEmpty(Sop)) {
+                    fprintf(stderr, "une parenthese est fermée sans avoir été ouverte\n");
                     exit(EXIT_FAILURE);
                 }
-                Token * token_top = stackPop(Sop);
 
 
                 if (stackIsEmpty(Sval)) {
-                    fprintf(stderr, "Sval is empty-no var1\n");
+                    fprintf(stderr, "il manque une valeur pour faire l'opération\n");
                     exit(EXIT_FAILURE);
                 }
                 double * v1 = stackPop(Sval);
 
 
                 if (stackIsEmpty(Sval)) {
-                    fprintf(stderr, "Sval is empty-no var2\n");
+                    fprintf(stderr, "il manque une valeur pour faire l'opération\n");
                     exit(EXIT_FAILURE);
                 }
                 double * v2 = stackPop(Sval);
@@ -158,7 +155,7 @@ int syEvaluate(Tokenizer *tokenizer, SymbolTable *st, double *solution)
 
             }
 
-            /*Token * token_L = */stackPop(Sop);
+            stackPop(Sop);
 
             if (!stackIsEmpty(Sop) && tokenGetType(stackTop(Sop)) == T_SYMBOL) {
                 double * v = stackPop(Sval);
@@ -182,13 +179,13 @@ int syEvaluate(Tokenizer *tokenizer, SymbolTable *st, double *solution)
         Token * token_top = stackPop(Sop);
 
         if (stackIsEmpty(Sval)) {
-            fprintf(stderr, "sop empty for V1\n");
+            fprintf(stderr, "il manque une valeur pour faire l'opération\n");
             exit(EXIT_FAILURE);
         }
         double * v1 = stackPop(Sval);
 
         if (stackIsEmpty(Sval)) {
-            fprintf(stderr, "sop empty for V2\n");
+            fprintf(stderr, "il manque une valaur pour faire l'opération\n");
             exit(EXIT_FAILURE);
         }
 
@@ -204,21 +201,21 @@ int syEvaluate(Tokenizer *tokenizer, SymbolTable *st, double *solution)
 
     }
 
-    // listFree(list);
 
     if (!stackIsEmpty(Sop)) {
-            fprintf(stderr, "L\'expression nest pas correcte: il manque une parenthese ...\n");
+            fprintf(stderr, "L'expression nest pas correcte: il manque une parenthese ...\n");
             exit(EXIT_FAILURE);
         }
 
-    // if (stackIsEmpty(Sval))
-    //     return 0;
-    // else {
+    if (stackIsEmpty(Sval))
+        return 0;
+    else {
         *solution = (double) *((double *) stackPop(Sval));
-        // listFree(list);
+         listFree(list);
+		 
         if (!stackIsEmpty(Sval))
             return 0;
         return 1;
-    // }
+     }
 
 }
