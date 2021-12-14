@@ -22,10 +22,6 @@ typedef struct {
 	double (*f)(double);
 } FunctionStruct;
 
-typedef struct {
-	FunctionFctType opt;
-} Function_STR;
-
 
 
 SymbolTable *stCreate(void){
@@ -35,22 +31,17 @@ SymbolTable *stCreate(void){
 	ST->S_table_list = listCreate();
 
 	return ST;
-
 }
 
-// void dictFree(Dict *d);
+
 void stFree(SymbolTable *st) {
-	// Node *cur = l->first;
-	// while (cur) {
-	// 	Node *next = cur->next;
-	// 	free(*(cur->data))
-	// 	cur = next;
-	// }
+
 	dictFree(st->S_table_dict);
 	listFree(st->S_table_list);
 	free(st);
 
 }
+
 
 void stInsertOperator(SymbolTable *st, char *symbol, int prec, int assoc, OperatorFctType opf) {
 	//create structure
@@ -75,9 +66,11 @@ void stInsertFunction(SymbolTable *st, char *symbol, FunctionFctType f) {
 
 
 void stInsertVariable(SymbolTable *st, char *symbol, double val) {
-	double *pt_val = malloc(sizeof(double));
-	*pt_val = val;
+	double *pt_val;
 
+	if ((pt_val = malloc(sizeof(double))))
+		*pt_val = val;
+	
 	dictInsert(st->S_table_dict, symbol, pt_val);
 	listAdd(st->S_table_list, pt_val);
 
@@ -136,7 +129,7 @@ FunctionFctType stGetFunctionFct(SymbolTable *st, char *symbol) {
 	if (stContainsOperator(st, symbol))
 		return (FunctionFctType) ((FunctionStruct*) dictSearch(st->S_table_dict, symbol))->f;
 	else
-		fprintf(stderr,"the C prec Function was not founded");
+		fprintf(stderr,"The C Function of \'%s\' was not founded\n", symbol);
 	return 0;
 
 }
@@ -149,7 +142,6 @@ int stGetVariableValue(SymbolTable *st, char *symbol, double* result) {
 		return 1;
 		}
 	else
-		fprintf(stderr,"the C prec Function was not founded");
-	return 0;
+		return 0;
 
 }
